@@ -1,16 +1,19 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { SpendingChart } from '@/components/dashboard/SpendingChart';
 import { CategoryChart } from '@/components/dashboard/CategoryChart';
 import { RecentExpenses } from '@/components/dashboard/RecentExpenses';
 import { Button } from '@/components/ui/Button';
+import { ExportModal } from '@/components/export/ExportModal';
 import { useExpenses } from '@/context/ExpenseContext';
 import { formatCurrency, getLastMonthRange, filterExpensesByDateRange, calculateTotalExpenses } from '@/lib/utils';
 
 export default function DashboardPage() {
   const { expenses, totalExpenses, monthlyExpenses, isLoading } = useExpenses();
+  const [isExportOpen, setIsExportOpen] = useState(false);
 
   const lastMonthRange = getLastMonthRange();
   const lastMonthExpenses = filterExpensesByDateRange(
@@ -45,8 +48,8 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-500 mt-1">Track your spending at a glance</p>
         </div>
-        <Link href="/add">
-          <Button>
+        <div className="flex gap-2">
+          <Button variant="secondary" onClick={() => setIsExportOpen(true)}>
             <svg
               className="w-4 h-4 mr-2"
               fill="none"
@@ -57,12 +60,35 @@ export default function DashboardPage() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M12 4v16m8-8H4"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
               />
             </svg>
-            Add Expense
+            Export Data
           </Button>
-        </Link>
+          <Link href="/add">
+            <Button>
+              <svg
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              Add Expense
+            </Button>
+          </Link>
+        </div>
+        <ExportModal
+          isOpen={isExportOpen}
+          onClose={() => setIsExportOpen(false)}
+          expenses={expenses}
+        />
       </div>
 
       {/* Stats Grid */}
